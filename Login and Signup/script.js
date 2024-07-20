@@ -88,12 +88,11 @@ async function submitForm(event) {
         // Handle server response
         if (response.success) {
             if (isLoginForm) {
-                // Redirect to another page upon successful login
-                window.location.href = 'Website/home.html';
+                // Alert "successful" upon successful login
+                alert('Login successful.');;
             } else {
                 // Alert "successful" upon successful registration
                 alert('Registration successful.');
-                window.location.href = 'Website/account-settings.html';
             }
         } else {
             handleAuthError(response, action);

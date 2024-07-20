@@ -37,26 +37,6 @@ db.connect((err) => {
     }
 });
 
-// Function to append user data to JSON file
-function appendUserDataToFile(userData) {
-    let existingData = [];
-    try {
-        if (fs.existsSync('userdata.json')) {
-            existingData = JSON.parse(fs.readFileSync('userdata.json'));
-        }
-    } catch (error) {
-        console.error('Error reading JSON file:', error.message);
-    }
-
-    existingData.push(userData);
-    fs.writeFileSync('userdata.json', JSON.stringify(existingData, null, 2));
-}
-
-// Check if JSON file exists, if not create it
-if (!fs.existsSync('userdata.json')) {
-    fs.writeFileSync('userdata.json', '[]');
-}
-
 // Authentication endpoint for login
 app.post('/auth/login', async (req, res) => {
     const {phone, password } = req.body;
