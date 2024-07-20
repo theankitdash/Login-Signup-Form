@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
-const fs = require('fs');
 
 const app = express();
 const port = 3000;
@@ -82,24 +81,8 @@ app.post('/auth/register', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Phone number already exists' });
         }
 
-        // Append phone number and hashed password to JSON file
-        const userData = { phone, password: hashedPassword };
-        appendUserDataToFile(userData);
-
         res.json({ success: true });
     });
-});
-
-app.get('/api/login-info', (req, res) => {
-    // Read the JSON file containing login information
-    try {
-        const loginData = JSON.parse(fs.readFileSync('userdata.json'));
-        res.json(loginData);
-    } catch (error) {
-        console.error('Error reading JSON file:', error.message);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-    //res.sendFile(path.join(__dirname, 'Login and Signup', 'index.html'));
 });
 
 app.listen(port, () => {
