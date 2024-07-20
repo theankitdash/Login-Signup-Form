@@ -1,53 +1,64 @@
 let isLoginForm = true;
 
-function toggleForm() {
-    isLoginForm = !isLoginForm;
-
+document.addEventListener('DOMContentLoaded', function() {
     const formTitle = document.getElementById('formTitle');
     const submitButton = document.getElementById('submitButton');
     const toggleFormText = document.getElementById('toggleFormText');
     const confirmPasswordLabel = document.getElementById('confirmPasswordLabel');
     const confirmPassword = document.getElementById('confirmPassword');
 
-    if (isLoginForm) {
-        formTitle.innerText = 'Login';
-        submitButton.innerText = 'Login';
-        toggleFormText.innerHTML = 'Don\'t have an account? <a href="#" onclick="toggleForm()">Register here</a>';
-        confirmPasswordLabel.style.display = 'none';
-        confirmPassword.style.display = 'none';
-       
-    } else {
-        formTitle.innerText = 'Register';
-        submitButton.innerText = 'Register';
-        toggleFormText.innerHTML = 'Already have an account? <a href="#" onclick="toggleForm()">Login here</a>';
-        confirmPasswordLabel.style.display = 'block';
-        confirmPassword.style.display = 'block';
+    // Add event listener for toggleFormText link clicks
+    toggleFormText.addEventListener('click', toggleForm);
+
+    function toggleForm(event) {
+        event.preventDefault();
+        isLoginForm = !isLoginForm;
+
+        if (isLoginForm) {
+            formTitle.innerText = 'Login';
+            submitButton.innerText = 'Login';
+            toggleFormText.innerHTML = 'Don\'t have an account? <a href="#">Register here</a>';
+            confirmPasswordLabel.style.display = 'none';
+            confirmPassword.style.display = 'none';
+        } else {
+            formTitle.innerText = 'Register';
+            submitButton.innerText = 'Register';
+            toggleFormText.innerHTML = 'Already have an account? <a href="#">Login here</a>';
+            confirmPasswordLabel.style.display = 'block';
+            confirmPassword.style.display = 'block';
+        }
     }
-}
+});
 
 async function authenticateUser(phone, password, action) {
     // Update API endpoint URL
     const apiUrl = `/auth/${action}`;
 
-    // Make request to server
-    const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({phone, password}),
-    });
+    try {
+        // Make request to server
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({phone, password}),
+        });
 
-    // Handle response
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+        // Handle response
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-    return response.json();
+        return response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw new Error('An error occurred during authentication');
+    }    
 }
 
 async function submitForm(event) {
     event.preventDefault();
+
     const phone = document.getElementById('phone').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
@@ -76,19 +87,30 @@ async function submitForm(event) {
 
         // Handle server response
         if (response.success) {
-            alert('Login successful!');
-        } else {
-            if (action === 'login' && response.message === 'Invalid credentials') {
-                alert('Incorrect password. Please check your password and try again.');
-            } else if (!isLoginForm && response.message === 'Phone number already exists') {
-                alert('This phone number is already registered. Please use a different phone number or log in with your existing account.');
+            if (isLoginForm) {
+                // Redirect to another page upon successful login
+                window.location.href = 'Website/home.html';
             } else {
-                alert(`${action.charAt(0).toUpperCase() + action.slice(1)} failed. Please check your credentials.`);
+                // Alert "successful" upon successful registration
+                alert('Registration successful.');
+                window.location.href = 'Website/account-settings.html';
             }
+        } else {
+            handleAuthError(response, action);
         }
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred. Please try again.');
+    }
+}
+
+function handleAuthError(response, action) {
+    if (action === 'login' && response.message === 'Invalid credentials') {
+        alert('Incorrect password. Please check your password and try again.');
+    } else if (!isLoginForm && response.message === 'Phone number already exists') {
+        alert('This phone number is already registered. Please use a different phone number or log in with your existing account.');
+    } else {
+        alert(`${action.charAt(0).toUpperCase() + action.slice(1)} failed. Please check your credentials.`);
     }
 }
 
