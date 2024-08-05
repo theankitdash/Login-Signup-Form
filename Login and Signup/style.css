@@ -56,8 +56,11 @@ button:hover {
 
 #toggleFormText {
   text-align: center;
-  margin-top: 16px;
   color: #777;
+}
+
+#forgotPasswordText {
+  text-align: center;
 }
 
 a {
@@ -116,7 +119,7 @@ a:hover {
 
 #verifyUserForm input,
 #resetPasswordForm input {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   margin-bottom: 16px;
   border: 1px solid #ccc;
