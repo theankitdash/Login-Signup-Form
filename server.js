@@ -3,8 +3,7 @@ const path = require('path');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
+const fetch = require('node-fetch');
 
 const app = express();
 const port = 3000;
@@ -15,6 +14,9 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
+// Replace with your secret key from Google reCAPTCHA
+const RECAPTCHA_SECRET_KEY = 'YOUR_SECRET_KEY';
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'Login and Signup')));
@@ -114,6 +116,53 @@ app.post('/auth/register', async (req, res) => {
         req.session.password = hashedPassword;
         res.json({ success: true });
     });
+});
+
+// Endpoint to verify phone number and date of birth
+app.post('/auth/verify', async (req, res) => {
+    const { phone, dob } = req.body;
+
+    try {
+        // Verify Date of Birth
+        const query = 'SELECT * FROM personal_details WHERE phone = ? AND date_of_birth = ?';
+        db.query(query, [phone, dob], (err, results) => {
+            if (err) {
+                console.error('Error retrieving details:', err.message);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+
+            if (results.length === 0) {
+                return res.status(400).json({ success: false, message: 'Verification failed' });
+            }
+
+            res.json({ success: true });
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Endpoint to reset password
+app.post('/auth/resetPassword', async (req, res) => {
+    const { phone, newPassword } = req.body;
+
+    try {
+        const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the hashed password in the database
+        const updateQuery = 'UPDATE credentials SET password = ? WHERE phone = ?';
+        db.query(updateQuery, [newHashedPassword, phone], (err) => {
+            if (err) {
+                console.error('Error updating password:', err.message);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+            res.json({ success: true, message: 'Password updated successfully' });
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
 });
 
 //Endpoint to get current phone number and password
