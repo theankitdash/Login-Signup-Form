@@ -3,7 +3,6 @@ const path = require('path');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-const fetch = require('node-fetch');
 
 const app = express();
 const port = 3000;
@@ -14,9 +13,6 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-
-// Replace with your secret key from Google reCAPTCHA
-const RECAPTCHA_SECRET_KEY = 'YOUR_SECRET_KEY';
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'Login and Signup')));
