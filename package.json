@@ -1,5 +1,5 @@
 {
-  "name": "intelligent-tutor-system",
+  "name": "login-signup-form",
   "version": "1.0.0",
   "description": "",
   "main": "first.js",
@@ -13,8 +13,7 @@
     "bcrypt": "^5.1.1",
     "express": "^4.18.2",
     "express-session": "^1.18.0",
-    "mysql": "^2.18.1",
-    "nodemailer": "^6.9.14"
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
