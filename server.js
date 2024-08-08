@@ -9,7 +9,7 @@ const port = 3000;
 
 // Initialize express-session middleware
 app.use(session({
-    secret: 'your_secret_key',
+    secret: process.env.SESSION_SECRET || 'your_secret_key',
     resave: false,
     saveUninitialized: true
 }));
@@ -20,10 +20,10 @@ app.use(express.static(path.join(__dirname, 'Website')));
 
 // MySQL database setup
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Chiku@4009',
-    database: 'login-signup',
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'Chiku@4009',
+    database: process.env.DB_NAME || 'login-signup',
 });
 
 db.connect((err) => {
