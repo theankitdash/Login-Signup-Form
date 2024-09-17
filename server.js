@@ -1,11 +1,11 @@
 const express = require('express');
 const path = require('path');
 const mysql = require('mysql');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Initialize express-session middleware
 app.use(session({
@@ -15,15 +15,16 @@ app.use(session({
 }));
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'Login and Signup')));
-app.use(express.static(path.join(__dirname, 'Website')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MySQL database setup
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'Chiku@4009',
-    database: process.env.DB_NAME || 'login-signup',
+    host: process.env.AZURE_MYSQL_HOST || 'localhost',
+    user: process.env.AZURE_MYSQL_USER || 'root',
+    password: process.env.AZURE_MYSQL_PASSWORD || 'Chiku@4009',
+    database: process.env.AZURE_MYSQL_DATABASE || 'login-signup',
+    port: process.env.AZURE_MYSQL_PORT || 3306,
+    ssl: process.env.AZURE_MYSQL_SSL ? JSON.parse(process.env.AZURE_MYSQL_SSL) : false
 });
 
 db.connect((err) => {
